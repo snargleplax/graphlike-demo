@@ -75,34 +75,42 @@
         const go = new Go();
         let interval = null;
         let playing = false;
+        let nodeCount = 1;
+
+        function reset() {
+            nodeCount = 1;
+            document.getElementById('canvas').textContent = initGraph();
+        }
+
+        function doStep() {
+            document.getElementById('canvas').textContent = step();
+            nodeCount++;
+            if (playing && nodeCount >= 100) {
+                reset();
+            }
+        }
 
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
-            document.getElementById('canvas').textContent = initGraph();
+            reset();
         }).catch(err => {
             document.getElementById('loading').textContent = 'Error: ' + err;
         });
 
-        document.getElementById('step').addEventListener('click', () => {
-            document.getElementById('canvas').textContent = step();
-        });
+        document.getElementById('step').addEventListener('click', doStep);
 
         document.getElementById('play').addEventListener('click', () => {
             playing = !playing;
             document.getElementById('play').textContent = playing ? 'Pause' : 'Play';
             if (playing && !interval) {
-                interval = setInterval(() => {
-                    document.getElementById('canvas').textContent = step();
-                }, 50);
+                interval = setInterval(doStep, 50);
             } else if (!playing && interval) {
                 clearInterval(interval);
                 interval = null;
             }
         });
 
-        document.getElementById('reset').addEventListener('click', () => {
-            document.getElementById('canvas').textContent = initGraph();
-        });
+        document.getElementById('reset').addEventListener('click', reset);
     </script>
 </body>
 </html>
