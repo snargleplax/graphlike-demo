@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Graphlike Demo</title>
+    <style>
+        body {
+            background: #1a1a2e;
+            color: #eee;
+            font-family: monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        h1 {
+            color: #e94560;
+            margin-bottom: 10px;
+        }
+        #canvas {
+            background: #16213e;
+            padding: 10px;
+            border-radius: 4px;
+            line-height: 1.2;
+            white-space: pre;
+        }
+        #loading {
+            color: #888;
+        }
+        #controls {
+            margin-top: 10px;
+            color: #888;
+            font-size: 14px;
+        }
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: monospace;
+            margin: 0 5px;
+        }
+        button:hover {
+            background: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <h1>Graphlike</h1>
+    <pre id="canvas"><span id="loading">Loading WASM...</span></pre>
+    <div id="controls">
+        <button id="pause">Pause</button>
+        <button id="reset">Reset</button>
+    </div>
+
+    <script src="wasm_exec.js"></script>
+    <script>
+        const go = new Go();
+        let interval = null;
+        let paused = false;
+
+        WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+            go.run(result.instance);
+
+            document.getElementById('canvas').textContent = initGraph();
+
+            interval = setInterval(() => {
+                if (!paused) {
+                    document.getElementById('canvas').textContent = step();
+                }
+            }, 50);
+        }).catch(err => {
+            document.getElementById('loading').textContent = 'Error: ' + err;
+        });
+
+        document.getElementById('pause').addEventListener('click', () => {
+            paused = !paused;
+            document.getElementById('pause').textContent = paused ? 'Resume' : 'Pause';
+        });
+
+        document.getElementById('reset').addEventListener('click', () => {
+            document.getElementById('canvas').textContent = initGraph();
+        });
+    </script>
+</body>
+</html>
