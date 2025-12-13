@@ -73,12 +73,16 @@
             min-width: 40px;
             text-align: right;
         }
+        #stats {
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Graphlike</h1>
     <pre id="canvas"><span id="loading">Loading WASM...</span></pre>
     <div id="controls">
+        <div id="stats">Nodes: <span id="node-count">1</span> &nbsp; Edges: <span id="edge-count">0</span></div>
         <button id="step">Step</button>
         <button id="play">Play</button>
         <button id="reset">Reset</button>
@@ -124,9 +128,15 @@
             canvas.style.fontSize = newSize + 'px';
         }
 
+        function updateStats() {
+            document.getElementById('node-count').textContent = nodeCount();
+            document.getElementById('edge-count').textContent = edgeCount();
+        }
+
         function render(text) {
             document.getElementById('canvas').textContent = text;
             fitCanvas();
+            updateStats();
         }
 
         function reset() {
