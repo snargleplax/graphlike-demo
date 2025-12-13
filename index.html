@@ -84,6 +84,13 @@
         #stats {
             margin-bottom: 10px;
         }
+        #footer {
+            position: fixed;
+            bottom: 5px;
+            right: 10px;
+            font-size: 10px;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -101,6 +108,7 @@
             <span id="limit-value">50</span>
         </span>
     </div>
+    <div id="footer"></div>
 
     <script src="wasm_exec.js"></script>
     <script>
@@ -157,6 +165,7 @@
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
             reset();
+            document.getElementById('footer').textContent = gitSHA().substring(0, 7);
         }).catch(err => {
             document.getElementById('loading').textContent = 'Error: ' + err;
         });
