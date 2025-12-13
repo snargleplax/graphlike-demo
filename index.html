@@ -99,13 +99,15 @@
 
         function fitCanvas() {
             const canvas = document.getElementById('canvas');
-            // Measure at base size
+            // Temporarily allow overflow to measure true content size
+            canvas.style.overflow = 'scroll';
             canvas.style.fontSize = baseFontSize + 'px';
             const scaleX = canvas.clientWidth / canvas.scrollWidth;
             const scaleY = canvas.clientHeight / canvas.scrollHeight;
             const scale = Math.min(scaleX, scaleY, 1);
             const newSize = Math.max(baseFontSize * scale, minFontSize);
             canvas.style.fontSize = newSize + 'px';
+            canvas.style.overflow = 'hidden';
         }
 
         function render(text) {
