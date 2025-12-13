@@ -109,13 +109,13 @@
 
             // Calculate available space from viewport
             const header = document.querySelector('h1');
-            const headerHeight = header.getBoundingClientRect().height + 10; // + margin
-            const controlsHeight = 120; // fixed controls + stats + padding
-            const bodyPadding = 40; // 20px top + 20px sides
-            const canvasPadding = 20; // 10px each side
+            const controls = document.getElementById('controls');
+            const headerRect = header.getBoundingClientRect();
+            const controlsRect = controls.getBoundingClientRect();
 
-            const availWidth = window.innerWidth - bodyPadding - canvasPadding;
-            const availHeight = window.innerHeight - headerHeight - controlsHeight - canvasPadding;
+            const canvasPadding = 20; // 10px each side
+            const availWidth = window.innerWidth - 60 - canvasPadding;
+            const availHeight = controlsRect.top - headerRect.bottom - canvasPadding - 20;
 
             // Approximate char dimensions (monospace)
             const charWidth = baseFontSize * 0.6;
