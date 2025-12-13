@@ -30,7 +30,8 @@
             white-space: pre;
             flex: 1;
             max-width: calc(100vw - 60px);
-            overflow: auto;
+            overflow: hidden;
+            font-size: 14px;
         }
         #loading {
             color: #888;
@@ -75,13 +76,31 @@
         const go = new Go();
         let interval = null;
         let playing = false;
+        const baseFontSize = 14;
+        const minFontSize = 4;
+
+        function fitCanvas() {
+            const canvas = document.getElementById('canvas');
+            // Measure at base size
+            canvas.style.fontSize = baseFontSize + 'px';
+            const scaleX = canvas.clientWidth / canvas.scrollWidth;
+            const scaleY = canvas.clientHeight / canvas.scrollHeight;
+            const scale = Math.min(scaleX, scaleY, 1);
+            const newSize = Math.max(baseFontSize * scale, minFontSize);
+            canvas.style.fontSize = newSize + 'px';
+        }
+
+        function render(text) {
+            document.getElementById('canvas').textContent = text;
+            fitCanvas();
+        }
 
         function reset() {
-            document.getElementById('canvas').textContent = initGraph();
+            render(initGraph());
         }
 
         function doStep() {
-            document.getElementById('canvas').textContent = step();
+            render(step());
             if (playing && nodeCount() >= 100) {
                 reset();
             }
