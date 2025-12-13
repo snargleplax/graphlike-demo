@@ -56,7 +56,8 @@
     <h1>Graphlike</h1>
     <pre id="canvas"><span id="loading">Loading WASM...</span></pre>
     <div id="controls">
-        <button id="pause">Pause</button>
+        <button id="step">Step</button>
+        <button id="play">Play</button>
         <button id="reset">Reset</button>
     </div>
 
@@ -64,25 +65,30 @@
     <script>
         const go = new Go();
         let interval = null;
-        let paused = false;
+        let playing = false;
 
         WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
-
             document.getElementById('canvas').textContent = initGraph();
-
-            interval = setInterval(() => {
-                if (!paused) {
-                    document.getElementById('canvas').textContent = step();
-                }
-            }, 50);
         }).catch(err => {
             document.getElementById('loading').textContent = 'Error: ' + err;
         });
 
-        document.getElementById('pause').addEventListener('click', () => {
-            paused = !paused;
-            document.getElementById('pause').textContent = paused ? 'Resume' : 'Pause';
+        document.getElementById('step').addEventListener('click', () => {
+            document.getElementById('canvas').textContent = step();
+        });
+
+        document.getElementById('play').addEventListener('click', () => {
+            playing = !playing;
+            document.getElementById('play').textContent = playing ? 'Pause' : 'Play';
+            if (playing && !interval) {
+                interval = setInterval(() => {
+                    document.getElementById('canvas').textContent = step();
+                }, 50);
+            } else if (!playing && interval) {
+                clearInterval(interval);
+                interval = null;
+            }
         });
 
         document.getElementById('reset').addEventListener('click', () => {
