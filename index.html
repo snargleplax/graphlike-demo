@@ -75,17 +75,14 @@
         const go = new Go();
         let interval = null;
         let playing = false;
-        let nodeCount = 1;
 
         function reset() {
-            nodeCount = 1;
             document.getElementById('canvas').textContent = initGraph();
         }
 
         function doStep() {
             document.getElementById('canvas').textContent = step();
-            nodeCount++;
-            if (playing && nodeCount >= 100) {
+            if (playing && nodeCount() >= 100) {
                 reset();
             }
         }
