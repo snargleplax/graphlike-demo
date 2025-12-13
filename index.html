@@ -60,6 +60,20 @@
         button:hover {
             background: #ff6b6b;
         }
+        #limit-control {
+            margin-left: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #limit {
+            width: 120px;
+            vertical-align: middle;
+        }
+        #limit-value {
+            min-width: 40px;
+            text-align: right;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +83,10 @@
         <button id="step">Step</button>
         <button id="play">Play</button>
         <button id="reset">Reset</button>
+        <span id="limit-control">
+            <input type="range" id="limit" min="10" max="1000" value="50">
+            <span id="limit-value">50</span>
+        </span>
     </div>
 
     <script src="wasm_exec.js"></script>
@@ -99,9 +117,13 @@
             render(initGraph());
         }
 
+        function getLimit() {
+            return parseInt(document.getElementById('limit').value);
+        }
+
         function doStep() {
             render(step());
-            if (playing && nodeCount() >= 100) {
+            if (playing && nodeCount() >= getLimit()) {
                 reset();
             }
         }
@@ -127,6 +149,10 @@
         });
 
         document.getElementById('reset').addEventListener('click', reset);
+
+        document.getElementById('limit').addEventListener('input', () => {
+            document.getElementById('limit-value').textContent = getLimit();
+        });
     </script>
 </body>
 </html>
