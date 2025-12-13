@@ -31,7 +31,6 @@
             flex: 1;
             max-width: calc(100vw - 60px);
             overflow: hidden;
-            font-size: 14px;
         }
         #loading {
             color: #888;
@@ -99,15 +98,30 @@
 
         function fitCanvas() {
             const canvas = document.getElementById('canvas');
-            // Temporarily allow overflow to measure true content size
-            canvas.style.overflow = 'scroll';
+            const text = canvas.textContent;
+            const lines = text.split('\n');
+            const lineCount = lines.length;
+            const maxLineLen = Math.max(...lines.map(l => l.length));
+
+            // Measure character size at base font
             canvas.style.fontSize = baseFontSize + 'px';
-            const scaleX = canvas.clientWidth / canvas.scrollWidth;
-            const scaleY = canvas.clientHeight / canvas.scrollHeight;
+            const rect = canvas.getBoundingClientRect();
+            const padding = 20; // 10px padding on each side
+            const availWidth = rect.width - padding;
+            const availHeight = rect.height - padding;
+
+            // Approximate char dimensions (monospace)
+            const charWidth = baseFontSize * 0.6;
+            const lineHeight = baseFontSize * 1.2;
+
+            const contentWidth = maxLineLen * charWidth;
+            const contentHeight = lineCount * lineHeight;
+
+            const scaleX = availWidth / contentWidth;
+            const scaleY = availHeight / contentHeight;
             const scale = Math.min(scaleX, scaleY, 1);
             const newSize = Math.max(baseFontSize * scale, minFontSize);
             canvas.style.fontSize = newSize + 'px';
-            canvas.style.overflow = 'hidden';
         }
 
         function render(text) {
