@@ -35,9 +35,10 @@
             background: #16213e;
             padding: 10px;
             border-radius: 4px;
-            line-height: 1.2;
+            line-height: 1;
             white-space: pre;
             transform-origin: center center;
+            font-size: 14px;
         }
         #loading {
             color: #888;
@@ -96,7 +97,7 @@
         <button id="play">Play</button>
         <button id="reset">Reset</button>
         <span id="limit-control">
-            <input type="range" id="limit" min="10" max="1000" value="50">
+            <input type="range" id="limit" min="10" max="200" value="50">
             <span id="limit-value">50</span>
         </span>
     </div>
@@ -119,7 +120,10 @@
 
             const scaleX = containerRect.width / canvasRect.width;
             const scaleY = containerRect.height / canvasRect.height;
-            const scale = Math.min(scaleX, scaleY, 1);
+            let scale = Math.min(scaleX, scaleY, 1);
+
+            // Quantize to avoid sub-pixel rendering artifacts
+            scale = Math.floor(scale * 20) / 20;
 
             canvas.style.transform = `scale(${scale})`;
         }
