@@ -22,15 +22,22 @@
             color: #e94560;
             margin-bottom: 10px;
         }
+        #canvas-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            width: 100%;
+            max-width: calc(100vw - 60px);
+        }
         #canvas {
             background: #16213e;
             padding: 10px;
             border-radius: 4px;
             line-height: 1.2;
             white-space: pre;
-            flex: 1;
-            max-width: calc(100vw - 60px);
-            overflow: hidden;
+            transform-origin: center center;
         }
         #loading {
             color: #888;
@@ -80,7 +87,9 @@
 </head>
 <body>
     <h1>Graphlike</h1>
-    <pre id="canvas"><span id="loading">Loading WASM...</span></pre>
+    <div id="canvas-container">
+        <pre id="canvas"><span id="loading">Loading WASM...</span></pre>
+    </div>
     <div id="controls">
         <div id="stats">Nodes: <span id="node-count">1</span> &nbsp; Edges: <span id="edge-count">0</span></div>
         <button id="step">Step</button>
@@ -97,38 +106,22 @@
         const go = new Go();
         let interval = null;
         let playing = false;
-        const baseFontSize = 14;
-        const minFontSize = 4;
 
         function fitCanvas() {
             const canvas = document.getElementById('canvas');
-            const text = canvas.textContent;
-            const lines = text.split('\n');
-            const lineCount = lines.length;
-            const maxLineLen = Math.max(...lines.map(l => l.length));
+            const container = document.getElementById('canvas-container');
 
-            // Calculate available space from viewport
-            const header = document.querySelector('h1');
-            const controls = document.getElementById('controls');
-            const headerRect = header.getBoundingClientRect();
-            const controlsRect = controls.getBoundingClientRect();
+            // Reset scale to measure natural size
+            canvas.style.transform = 'scale(1)';
 
-            const canvasPadding = 20; // 10px each side
-            const availWidth = window.innerWidth - 60 - canvasPadding;
-            const availHeight = controlsRect.top - headerRect.bottom - canvasPadding - 20;
+            const containerRect = container.getBoundingClientRect();
+            const canvasRect = canvas.getBoundingClientRect();
 
-            // Approximate char dimensions (monospace)
-            const charWidth = baseFontSize * 0.6;
-            const lineHeight = baseFontSize * 1.2;
-
-            const contentWidth = maxLineLen * charWidth;
-            const contentHeight = lineCount * lineHeight;
-
-            const scaleX = availWidth / contentWidth;
-            const scaleY = availHeight / contentHeight;
+            const scaleX = containerRect.width / canvasRect.width;
+            const scaleY = containerRect.height / canvasRect.height;
             const scale = Math.min(scaleX, scaleY, 1);
-            const newSize = Math.max(baseFontSize * scale, minFontSize);
-            canvas.style.fontSize = newSize + 'px';
+
+            canvas.style.transform = `scale(${scale})`;
         }
 
         function updateStats() {
